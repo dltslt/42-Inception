@@ -1,4 +1,17 @@
+# serve any static website on port 8080 for localhost
 http://:8080 {
-	root * /srv/www
-	file_server
+#	root * /srv/www	# document root for all requests
+#	file_server		# enable static file serving
+	redir https://{host}:443{uri}
 }
+
+# serving https only works with a clear domain, needs localhost
+
+localhost:443 {
+  root * /srv/www	# document root for all requests
+  file_server		# enable static file serving
+  tls internal		# create and use a self signed certificate
+}
+
+# caddy autoredirect not possible, because localhost might be used by nginx
+# need definitive ports
