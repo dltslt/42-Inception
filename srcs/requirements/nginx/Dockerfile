@@ -15,9 +15,9 @@ EXPOSE 80 443
 
 COPY conf/nginx.conf /etc/nginx/http.d/DOMAIN_NAME.conf
 
-RUN sed -i "s/__DOMAIN_NAME__/${DOMAIN_NAME}/g" \
+RUN sed -i "s|__DOMAIN_NAME__|${DOMAIN_NAME}|g" \
     /etc/nginx/http.d/DOMAIN_NAME.conf && \
-	sed -i "s/__WP_PATH__/${WP_PATH}/g" \
+	sed -i "s|__WP_PATH__|${WP_PATH}|g" \
     /etc/nginx/http.d/DOMAIN_NAME.conf
 
 ENTRYPOINT [ "nginx" ]

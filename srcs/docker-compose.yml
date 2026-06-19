@@ -11,6 +11,7 @@ services:           # the containers to run ...
       context: ./requirements/nginx
       args:
         - DOMAIN_NAME=$DOMAIN_NAME
+        - WP_PATH=$WP_PATH
     image: nginx
     container_name: nginx
     restart: always
