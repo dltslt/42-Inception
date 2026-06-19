@@ -1,7 +1,6 @@
-# serve any static website on port 8080 for localhost
+# redirect any static website on port 8080 to https
+
 http://:8080 {
-#	root * /srv/www	# document root for all requests
-#	file_server		# enable static file serving
 	redir https://{host}:443{uri}
 }
 
@@ -14,4 +13,4 @@ localhost:443 {
 }
 
 # caddy autoredirect not possible, because localhost might be used by nginx
-# need definitive ports
+# need definitive ports for caddy rules
