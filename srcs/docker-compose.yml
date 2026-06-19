@@ -1,5 +1,21 @@
 services:           # the containers to run ...
+  nginx:
+    env_file: .env
+    build:
+      context: ./requirements/nginx
+      args:
+        - DOMAIN_NAME=$DOMAIN_NAME
+    image: nginx
+    container_name: nginx
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    networks:
+      - inception
 
-volumes:            # named volumes ...
+#volumes:            # named volumes ...
 
 networks:           # named networks ...
+  inception:
+    driver: bridge
