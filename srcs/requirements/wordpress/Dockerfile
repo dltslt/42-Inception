@@ -41,4 +41,6 @@ RUN mkdir -p ${WP_PATH} && wp core download --path="${WP_PATH}" --locale=en_US -
 
 COPY ./tools/simple.sh /simple.sh
 
+RUN chmod +x /simple.sh
+
 ENTRYPOINT ["/simple.sh"]
