@@ -1,3 +1,9 @@
+secrets:
+  mysql_pwd:
+    file: ../secrets/mysql_pwd.txt
+  wp_admin:
+    file: ../secrets/wp_admin.txt
+
 services:           # the containers to run ...
   nginx:
     env_file: .env
@@ -20,6 +26,7 @@ services:           # the containers to run ...
       context: ./requirements/wordpress
       args:
         - DOMAIN_NAME=$DOMAIN_NAME
+        - WP_PATH=$WP_PATH
     image: wordpress
     container_name: wordpress
     restart: always
@@ -27,6 +34,8 @@ services:           # the containers to run ...
       - "9000:9000"
     networks:
       - inception
+    secrets:
+      - mysql_pwd
 
 #volumes:            # named volumes ...
 
