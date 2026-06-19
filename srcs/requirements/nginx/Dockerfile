@@ -12,6 +12,11 @@ RUN mkdir -p /etc/nginx/ssl/ && \
 
 EXPOSE 80 443
 
+COPY conf/nginx.conf /etc/nginx/http.d/DOMAIN_NAME.conf
+
+RUN sed -i "s/__DOMAIN_NAME__/${DOMAIN_NAME}/g" \
+    /etc/nginx/http.d/DOMAIN_NAME.conf
+
 ENTRYPOINT [ "nginx" ]
 
 CMD [ "-g", "daemon off;" ]
