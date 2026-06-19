@@ -1,10 +1,15 @@
+# pssssssst don't tell anyone
+# ------------------------------------------------------------------------------
 secrets:
   mysql_pwd:
     file: ../secrets/mysql_pwd.txt
   wp_admin:
     file: ../secrets/wp_admin.txt
 
-services:           # the containers to run ...
+# services
+# ------------------------------------------------------------------------------
+services:
+# -- nginx ----------------------------
   nginx:
     env_file: .env
     build:
@@ -20,7 +25,7 @@ services:           # the containers to run ...
       - "443:443"
     networks:
       - inception
-  
+# -- wordpress ------------------------
   wordpress:
     env_file: .env
     build:
@@ -37,9 +42,22 @@ services:           # the containers to run ...
       - inception
     secrets:
       - mysql_pwd
+# -- mariadb --------------------------
+  mariadb:
+    env_file: .env
+    build:
+      context: ./requirements/mariadb
+     # args:
+    image: mariadb
+    container_name: mariadb
+    restart: always
 
-#volumes:            # named volumes ...
+# persistent volumes
+# ------------------------------------------------------------------------------
+# volumes:
 
-networks:           # named networks ...
+# networks
+# ------------------------------------------------------------------------------
+networks:
   inception:
     driver: bridge

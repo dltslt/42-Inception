@@ -1,0 +1,16 @@
+[mysqld]
+# allow TCP connections for cross-container access
+skip-networking     = 0
+
+# listen on all network interfaces inside the container
+bind-address        = 0.0.0.0
+
+# skip DNS reverse lookups for connecting hosts because container names are used
+skip-host-cache
+skip-name-resolve
+
+# data storage
+datadir             = /var/lib/mysql
+
+# socket file for local connections
+socket              = /run/mysqld/mysqld.sock
