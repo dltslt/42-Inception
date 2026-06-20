@@ -1,15 +1,31 @@
 # ------------------------------------------------------------------------------
 # awesome service awareness feature
 # ------------------------------------------------------------------------------
-KNOWN_TARGETS := all build up down debug stop start sh clean fclean remove logs du duw ps psw
-SERVICES := $(filter-out $(KNOWN_TARGETS),$(MAKECMDGOALS))
+
 COMPOSEFILE := srcs/docker-compose.yml
+
+KNOWN_TARGETS := all run build up down re\
+				 debug stop start sh logs \
+				 clean fclean remove du duw ps psw
+KNOWN_SERVICES := nginx wordpress mariadb
+
+REQUESTED_TARGETS := $(filter $(KNOWN_TARGETS),$(MAKECMDGOALS))
+SERVICES := $(filter-out $(KNOWN_TARGETS),$(MAKECMDGOALS))
+BAD_ARGUMENTS := $(filter-out $(KNOWN_SERVICES),$(SERVICES))
+
+ifneq ($(strip $(BAD_ARGUMENTS)),)
+$(info usage: make <target> [service])
+$(info or     make [service])
+$(error invalid argument(s): $(BAD_ARGUMENTS))
+endif
 
 # ------------------------------------------------------------------------------
 # main targets
 # ------------------------------------------------------------------------------
 
-all: up
+all: run
+
+run: up
 
 # creates containers from images and starts them
 # --build enforces rebuild
@@ -25,6 +41,8 @@ build:
 # removes containers & networks but NOT volumes & images
 down:
 	@docker compose -f $(COMPOSEFILE) down $(if $(SERVICES),$(SERVICES),)
+
+re: remove run
 
 # ------------------------------------------------------------------------------
 # feature targets
@@ -50,6 +68,10 @@ sh:
 	fi
 	@docker compose -f $(COMPOSEFILE) exec -it $(SERVICES) sh
 
+# concurrently read logs of the whole compose stack
+logs:
+	@docker compose -f $(COMPOSEFILE) logs -f
+
 # ------------------------------------------------------------------------------
 # service targets
 # ------------------------------------------------------------------------------
@@ -57,6 +79,8 @@ sh:
 # removes containers & networks & volumes but NOT images
 clean:
 	@docker compose -f $(COMPOSEFILE) down $(SERVICES) -v
+	@docker buildx prune --force --filter "until=48h" || \
+		docker builder prune --force --filter "until=48h"
 
 # removes containers & networks & volumes & images & unused build cache
 fclean:
@@ -67,9 +91,6 @@ fclean:
 remove:
 	@docker compose -f $(COMPOSEFILE) down $(SERVICES) --rmi all -v
 	@docker buildx prune --force || docker builder prune --force
-# concurrently read logs of the whole compose stack
-logs:
-	@docker compose -f $(COMPOSEFILE) logs -f
 
 # show current docker disk usage
 du:
@@ -85,6 +106,11 @@ psw:
 
 .PHONY: $(KNOWN_TARGETS)
 
+ifeq ($(words $(REQUESTED_TARGETS)), 0)
+# create service recipes to support `make nginx` etc.
+$(KNOWN_SERVICES): run
+else
 # blackhole recipe to swallow all extra SERVICE make command goals
 %:
 	@:
+endif
