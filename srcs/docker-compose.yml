@@ -24,6 +24,8 @@ services:
     image: nginx
     container_name: nginx
     restart: always
+    volumes:
+      - wordpress-disk:/var/www/html
     ports:
       - "80:80"
       - "443:443"
@@ -40,6 +42,8 @@ services:
     image: wordpress
     container_name: wordpress
     restart: always
+    volumes:
+      - wordpress-disk:/var/www/html
     networks:
       - inception
     expose:
@@ -58,6 +62,8 @@ services:
     image: mariadb
     container_name: mariadb
     restart: always
+    volumes:
+      - database-disk:/var/lib/mysql
     networks:
       - inception
     expose:
@@ -67,7 +73,11 @@ services:
 
 # persistent volumes
 # ------------------------------------------------------------------------------
-# volumes:
+volumes:
+  database-disk:
+    driver: local
+  wordpress-disk:
+    driver: local
 
 # networks
 # ------------------------------------------------------------------------------
