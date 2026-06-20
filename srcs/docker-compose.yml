@@ -80,15 +80,15 @@ volumes:
     driver: local
     driver_opts:
       type: none
-      #device: /home/mweghofe/data/database
-      device: ../archive/database
+      #device: /home/mweghofe/data/mariadb
+      device: ../data/mariadb
       o: bind
   wordpress-disk:
     driver: local
     driver_opts:
       type: none
-      #device: /home/mweghofe/data/database
-      device: ../archive/wordpress
+      #device: /home/mweghofe/data/wordpress
+      device: ../data/wordpress
       o: bind
 
 # networks
