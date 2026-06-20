@@ -58,6 +58,7 @@ GRANT SELECT, INSERT, UPDATE, DELETE, CREATE, DROP, ALTER, INDEX, REFERENCES
         --user_pass="${WP_USER_PASSWORD}" \
         --allow-root
 
+	chown www-data:www-data /var/www/html/wp-config.php
     echo "WordPress installation complete."
 else
     echo "WordPress already installed, skipping setup."

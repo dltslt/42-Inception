@@ -36,6 +36,12 @@ RUN curl -sO https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cl
 
 RUN mkdir -p ${WP_PATH} && wp core download --path="${WP_PATH}" --locale=en_US --allow-root
 
+RUN adduser -u 82 -D -S -G www-data www-data
+RUN chown -R www-data:www-data /var/www/html && \
+	chmod -R 755 /var/www/html
+
+COPY ./conf/php-fpm.conf /etc/php83/php-fpm.d/www.conf
+
 COPY ./tools/entrypoint.sh /run/entrypoint.sh
 
 # RUN chmod +x /run/entrypoint.sh
