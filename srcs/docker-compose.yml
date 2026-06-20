@@ -76,8 +76,18 @@ services:
 volumes:
   database-disk:
     driver: local
+    driver_opts:
+      type: none
+      #device: /home/mweghofe/data/database
+      device: ../archive/database
+      o: bind
   wordpress-disk:
     driver: local
+    driver_opts:
+      type: none
+      #device: /home/mweghofe/data/database
+      device: ../archive/wordpress
+      o: bind
 
 # networks
 # ------------------------------------------------------------------------------
