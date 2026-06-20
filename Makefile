@@ -3,6 +3,8 @@
 # ------------------------------------------------------------------------------
 
 COMPOSEFILE := srcs/docker-compose.yml
+#VOLUME_DATA := /home/mweghofe/data/database /home/mweghofe/data/wordpress
+VOLUME_DATA := ./archive/database ./archive/wordpress
 
 KNOWN_TARGETS := all run build up down re\
 				 debug stop start sh logs \
@@ -36,6 +38,7 @@ up: build
 # build images from dockerfiles
 # -f which compose file (because NOT in same dir)
 build: 
+	@mkdir -p $(VOLUME_DATA)
 	@docker compose -f $(COMPOSEFILE) build $(SERVICES)
 
 # removes containers & networks but NOT volumes & images
@@ -79,17 +82,26 @@ logs:
 # removes containers & networks & volumes but NOT images
 clean:
 	@docker compose -f $(COMPOSEFILE) down $(SERVICES) -v
+	@if [ "$(words $(SERVICES))" -eq 0 ] || [ "$(words $(filter mariadb wordpress,$(SERVICES)))" -eq 2 ]; then \
+		docker run --rm -v "$(CURDIR)/archive:/archive" busybox rm -rf $(VOLUME_DATA); \
+	fi
 	@docker buildx prune --force --filter "until=48h" || \
 		docker builder prune --force --filter "until=48h"
 
 # removes containers & networks & volumes & images & unused build cache
 fclean:
 	@docker compose -f $(COMPOSEFILE) down --rmi all -v
+	@docker run --rm -v "$(CURDIR)/archive:/archive" busybox rm -rf $(VOLUME_DATA)
+# 	@docker rmi busybox
 	@docker buildx prune --force || docker builder prune --force
 
 # remove all data for a specific service & all dangling build cache
 remove:
 	@docker compose -f $(COMPOSEFILE) down $(SERVICES) --rmi all -v
+	@if [ "$(words $(SERVICES))" -eq 0 ] || [ "$(words $(filter mariadb wordpress,$(SERVICES)))" -eq 2 ]; then \
+		docker run --rm -v "$(CURDIR)/archive:/archive" busybox rm -rf $(VOLUME_DATA); \
+	fi
+# 	@docker rmi busybox
 	@docker buildx prune --force || docker builder prune --force
 
 # show current docker disk usage
