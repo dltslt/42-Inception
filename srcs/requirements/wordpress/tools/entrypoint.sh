@@ -37,8 +37,7 @@ GRANT SELECT, INSERT, UPDATE, DELETE, CREATE, DROP, ALTER, INDEX, REFERENCES
         --dbname="${WP_DB}" \
         --dbuser="${WP_DB_USER}" \
         --dbpass="${WP_DB_PASSWORD}" \
-        --dbhost=mariadb \
-        --allow-root
+        --dbhost=mariadb
 	
     # Run the WordPress database installation
     wp core install \
@@ -48,17 +47,15 @@ GRANT SELECT, INSERT, UPDATE, DELETE, CREATE, DROP, ALTER, INDEX, REFERENCES
         --admin_user="${WP_ADMIN_USER}" \
         --admin_password="${WP_ADMIN_PASSWORD}" \
         --admin_email="${WP_ADMIN_EMAIL}" \
-        --skip-email \
-        --allow-root
+        --skip-email
 
     # Create the second (non-admin) user required by the subject
     wp user create "${WP_USER}" "${WP_USER_EMAIL}" \
         --path="${WP_PATH}" \
         --role=author \
-        --user_pass="${WP_USER_PASSWORD}" \
-        --allow-root
+        --user_pass="${WP_USER_PASSWORD}"
 
-	chown www-data:www-data /var/www/html/wp-config.php
+	#chown www-data:www-data /var/www/html/wp-config.php
     echo "WordPress installation complete."
 else
     echo "WordPress already installed, skipping setup."
@@ -67,6 +64,4 @@ fi
 # replace script with php-fpm
 # -F: run in foreground
 # -R: allow running as root
-exec php-fpm83 -F -R
-
-# TODO check if php-fpm can run as a wordpress user, www user instead of root
+exec php-fpm83 -F

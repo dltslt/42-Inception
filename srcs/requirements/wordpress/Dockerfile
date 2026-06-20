@@ -34,11 +34,15 @@ RUN curl -sO https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cl
 	&& chmod +x wp-cli.phar \
 	&& mv wp-cli.phar /usr/local/bin/wp
 
-RUN mkdir -p ${WP_PATH} && wp core download --path="${WP_PATH}" --locale=en_US --allow-root
+RUN mkdir -p ${WP_PATH} && \
+	adduser -u 82 -D -S -G www-data www-data && \
+	chown -R www-data:www-data /var/www/html && \
+	chmod -R 755 /var/www/html && \
+	chown -R www-data:www-data /var/log/php83
 
-RUN adduser -u 82 -D -S -G www-data www-data
-RUN chown -R www-data:www-data /var/www/html && \
-	chmod -R 755 /var/www/html
+USER www-data
+
+RUN wp core download --path="${WP_PATH}" --locale=en_US
 
 COPY ./conf/php-fpm.conf /etc/php83/php-fpm.d/www.conf
 
