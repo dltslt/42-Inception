@@ -21,8 +21,8 @@ services:
     build:
       context: ./requirements/nginx
       args:
-        - DOMAIN_NAME=$DOMAIN_NAME
-        - WP_PATH=$WP_PATH
+        - A_DOMAIN_NAME=$DOMAIN_NAME
+        - A_WP_PATH=$WP_PATH
     image: nginx
     container_name: nginx
     restart: always
@@ -41,8 +41,7 @@ services:
     build:
       context: ./requirements/wordpress
       args:
-        - DOMAIN_NAME=$DOMAIN_NAME
-        - WP_PATH=$WP_PATH
+        - A_WP_PATH=$WP_PATH
     image: wordpress
     container_name: wordpress
     restart: always

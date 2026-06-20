@@ -2,8 +2,7 @@ FROM alpine:3.23
 
 EXPOSE 9000
 
-ARG DOMAIN_NAME=$DOMAIN_NAME
-ARG WP_PATH=$WP_PATH
+ARG A_WP_PATH
 
 RUN apk update && apk add --no-cache \
     php83 \
@@ -34,7 +33,7 @@ RUN curl -sO https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cl
 	&& chmod +x wp-cli.phar \
 	&& mv wp-cli.phar /usr/local/bin/wp
 
-RUN mkdir -p ${WP_PATH} && \
+RUN mkdir -p ${A_WP_PATH} && \
 	adduser -u 82 -D -S -G www-data www-data && \
 	chown -R www-data:www-data /var/www/html && \
 	chmod -R 755 /var/www/html && \
@@ -42,7 +41,7 @@ RUN mkdir -p ${WP_PATH} && \
 
 USER www-data
 
-RUN wp core download --path="${WP_PATH}" --locale=en_US
+RUN wp core download --path="${A_WP_PATH}" --locale=en_US
 
 COPY ./conf/php-fpm.conf /etc/php83/php-fpm.d/www.conf
 
