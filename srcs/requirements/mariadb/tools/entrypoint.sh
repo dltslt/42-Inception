@@ -36,7 +36,6 @@ FLUSH PRIVILEGES;
 
 # creating a user for other containers to attend to their own needs
 	MYSQL_MAINTAIN_PWD=$(cat /run/secrets/mysql)
-	echo "new password: ${MYSQL_MAINTAIN_PWD}"
 	MYSQL_MAINTAIN="
 -- create a user <boss> with a password
 CREATE USER 'boss'@'%' IDENTIFIED BY '${MYSQL_MAINTAIN_PWD}';
