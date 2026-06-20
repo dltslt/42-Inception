@@ -73,7 +73,7 @@ sh:
 
 # concurrently read logs of the whole compose stack
 logs:
-	@docker compose -f $(COMPOSEFILE) logs -f
+	@while :; do docker compose -f $(COMPOSEFILE) logs -f $(SERVICES); sleep 1; done
 
 # ------------------------------------------------------------------------------
 # service targets
