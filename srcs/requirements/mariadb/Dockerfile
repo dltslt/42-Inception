@@ -15,6 +15,6 @@ COPY ./conf/maria.cnf /etc/my.cnf.d/mariadb-server.cnf
 
 COPY tools/entrypoint.sh /run/entrypoint.sh
 
-ENTRYPOINT [ "sh" ]
+RUN chmod +x /run/entrypoint.sh
 
-CMD ["/run/entrypoint.sh"]
+ENTRYPOINT ["/run/entrypoint.sh"]

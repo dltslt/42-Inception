@@ -39,16 +39,14 @@ RUN mkdir -p ${A_WP_PATH} && \
 	chmod -R 755 /var/www/html && \
 	chown -R www-data:www-data /var/log/php83
 
-USER www-data
-
-RUN wp core download --path="${A_WP_PATH}" --locale=en_US
-
 COPY ./conf/php-fpm.conf /etc/php83/php-fpm.d/www.conf
 
 COPY ./tools/entrypoint.sh /run/entrypoint.sh
 
-# RUN chmod +x /run/entrypoint.sh
+RUN chmod +x /run/entrypoint.sh
 
-ENTRYPOINT ["sh"]
+USER www-data
 
-CMD ["/run/entrypoint.sh"]
+RUN wp core download --path="${A_WP_PATH}" --locale=en_US
+
+ENTRYPOINT ["/run/entrypoint.sh"]
