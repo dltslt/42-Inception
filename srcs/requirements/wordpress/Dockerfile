@@ -1,5 +1,10 @@
 FROM alpine:3.23
 
+EXPOSE 9000
+
+ARG DOMAIN_NAME=$DOMAIN_NAME
+ARG WP_PATH=$WP_PATH
+
 RUN apk update && apk add --no-cache \
     php83 \
     php83-fpm \
@@ -21,6 +26,7 @@ RUN apk update && apk add --no-cache \
     php83-tokenizer \
     php83-simplexml \
     curl \
+	mariadb-client \
 	&& ln -s /usr/bin/php83 /usr/bin/php \
 	&& sed -i 's/^memory_limit = .*/memory_limit = 512M/' /etc/php83/php.ini
 
@@ -28,19 +34,12 @@ RUN curl -sO https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cl
 	&& chmod +x wp-cli.phar \
 	&& mv wp-cli.phar /usr/local/bin/wp
 
-ARG DOMAIN_NAME=$DOMAIN_NAME
-ARG WP_PATH=$WP_PATH
-
-RUN which php || true
-RUN which php83 || true
-RUN php --version || true
-RUN php83 --version || true
-RUN grep -n "memory_limit" /etc/php83/php-fpm.d/www.conf || true
-
 RUN mkdir -p ${WP_PATH} && wp core download --path="${WP_PATH}" --locale=en_US --allow-root
 
-COPY ./tools/simple.sh /simple.sh
+COPY ./tools/entrypoint.sh /run/entrypoint.sh
 
-RUN chmod +x /simple.sh
+# RUN chmod +x /run/entrypoint.sh
 
-ENTRYPOINT ["/simple.sh"]
+ENTRYPOINT ["sh"]
+
+CMD ["/run/entrypoint.sh"]

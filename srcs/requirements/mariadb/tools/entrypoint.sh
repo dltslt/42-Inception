@@ -35,18 +35,17 @@ FLUSH PRIVILEGES;
 "
 
 # creating a user for other containers to attend to their own needs
-	MYSQL_MAINTAIN_PWD=$(cat /run/secrets/mysql_pwd)
+	MYSQL_MAINTAIN_PWD=$(cat /run/secrets/mysql)
 	echo "new password: ${MYSQL_MAINTAIN_PWD}"
 	MYSQL_MAINTAIN="
 -- create a user <boss> with a password
 CREATE USER 'boss'@'%' IDENTIFIED BY '${MYSQL_MAINTAIN_PWD}';
 
-GRANT SELECT, INSERT, UPDATE, DELETE, CREATE, INDEX, ALTER
+--GRANT ALL PRIVILEGES
+GRANT SELECT, INSERT, UPDATE, DELETE, CREATE, DROP, ALTER, INDEX, REFERENCES
   ON *.* TO 'boss'@'%' WITH GRANT OPTION;
 
 GRANT CREATE USER ON *.* TO 'boss'@'%';
-
-FLUSH PRIVILEGES;
 "
 	# execute commands
 	mariadb -e "${MYSQL_SECURE}"
