@@ -1,17 +1,20 @@
 FROM alpine:3.23
 
-RUN apk update && apk add --no-cache mariadb
+EXPOSE 3306
 
-COPY ./tools/setup.sql /tmp/setup.sql
+RUN apk update && apk add --no-cache mariadb mariadb-client
 
 RUN mkdir -p /run/mysqld && \
 	chown -R mysql:mysql /run/mysqld && \
 	chown -R mysql:mysql /var/lib/mysql
 
 RUN mariadb-install-db --user=mysql --datadir=/var/lib/mysql && \
-	mariadbd --user=mysql --bootstrap < /tmp/setup.sql && \
-	rm -f /tmp/setup.sql
+	mv /etc/my.cnf.d/mariadb-server.cnf /etc/my.cnf.d/mariadb-server.cnf.bak
 
-ENTRYPOINT [ "mariadbd" ]
+COPY ./conf/maria.cnf /etc/my.cnf.d/mariadb-server.cnf
 
-CMD ["--user=mysql"]
+COPY tools/entrypoint.sh /run/entrypoint.sh
+
+ENTRYPOINT [ "sh" ]
+
+CMD ["/run/entrypoint.sh"]

@@ -51,6 +51,12 @@ services:
     image: mariadb
     container_name: mariadb
     restart: always
+    networks:
+      - inception
+    expose:
+      - "3306"
+    secrets:
+      - mysql_pwd
 
 # persistent volumes
 # ------------------------------------------------------------------------------
