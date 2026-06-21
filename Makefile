@@ -12,8 +12,10 @@ KNOWN_TARGETS := all run build up down re\
 KNOWN_SERVICES := nginx wordpress mariadb
 
 REQUESTED_TARGETS := $(filter $(KNOWN_TARGETS),$(MAKECMDGOALS))
-SERVICES := $(filter-out $(KNOWN_TARGETS),$(MAKECMDGOALS))
-BAD_ARGUMENTS := $(filter-out $(KNOWN_SERVICES),$(SERVICES))
+GOAL_SERVICES := $(filter-out $(KNOWN_TARGETS),$(MAKECMDGOALS))
+BAD_ARGUMENTS := $(filter-out $(KNOWN_SERVICES),$(GOAL_SERVICES))
+
+SERVICES :=  $(addprefix inception_, $(GOAL_SERVICES))
 
 ifneq ($(strip $(BAD_ARGUMENTS)),)
 $(info usage: make <target> [service])

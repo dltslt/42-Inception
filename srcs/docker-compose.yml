@@ -14,41 +14,41 @@ secrets:
 # ------------------------------------------------------------------------------
 services:
 # -- nginx ----------------------------
-  nginx:
-    depends_on:
-      - wordpress
+  inception_nginx:
     env_file: .env
     build:
       context: ./requirements/nginx
       args:
         - A_DOMAIN_NAME=$DOMAIN_NAME
         - A_WP_PATH=$WP_PATH
-    image: nginx
-    container_name: nginx
+    image: inception_nginx
+    container_name: inception_nginx
     restart: always
+    depends_on:
+      - inception_wordpress
     volumes:
       - wordpress-disk:/var/www/html
     ports:
       - "80:80"
       - "443:443"
     networks:
-      - inception
+      - inception_network
 # -- wordpress ------------------------
-  wordpress:
-    depends_on:
-      - mariadb
+  inception_wordpress:
     env_file: .env
     build:
       context: ./requirements/wordpress
       args:
         - A_WP_PATH=$WP_PATH
-    image: wordpress
-    container_name: wordpress
+    image: inception_wordpress
+    container_name: inception_wordpress
     restart: always
+    depends_on:
+      - inception_mariadb
     volumes:
       - wordpress-disk:/var/www/html
     networks:
-      - inception
+      - inception_network
     expose:
       - "9000"
     secrets:
@@ -57,17 +57,17 @@ services:
       - wp_admin
       - wp_user
 # -- mariadb --------------------------
-  mariadb:
+  inception_mariadb:
     env_file: .env
     build:
       context: ./requirements/mariadb
-    image: mariadb
-    container_name: mariadb
+    image: inception_mariadb
+    container_name: inception_mariadb
     restart: always
     volumes:
       - database-disk:/var/lib/mysql
     networks:
-      - inception
+      - inception_network
     expose:
       - "3306"
     secrets:
@@ -94,5 +94,5 @@ volumes:
 # networks
 # ------------------------------------------------------------------------------
 networks:
-  inception:
+  inception_network:
     driver: bridge
