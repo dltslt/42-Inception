@@ -72,6 +72,18 @@ services:
       - "3306"
     secrets:
       - mysql
+# -- website --------------------- B --
+  inception_website:
+    build:
+      context: ./requirements/bonus/website
+    image: inception_website
+    container_name: inception_website
+    restart: always
+    networks:
+      - inception_network
+    ports: # FIXME this is a problem
+      - "80:80"
+      - "443:443"
 
 # persistent volumes
 # ------------------------------------------------------------------------------

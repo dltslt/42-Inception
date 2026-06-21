@@ -9,7 +9,7 @@ VOLUME_DATA := ./data/mariadb ./data/wordpress
 KNOWN_TARGETS := all run build up down re\
 				 debug stop start sh logs \
 				 clean fclean remove du duw ps psw
-KNOWN_SERVICES := nginx wordpress mariadb
+KNOWN_SERVICES := nginx wordpress mariadb website
 
 REQUESTED_TARGETS := $(filter $(KNOWN_TARGETS),$(MAKECMDGOALS))
 GOAL_SERVICES := $(filter-out $(KNOWN_TARGETS),$(MAKECMDGOALS))
