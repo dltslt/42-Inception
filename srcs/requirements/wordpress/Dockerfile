@@ -9,6 +9,7 @@ RUN apk update && apk add --no-cache \
     php83-fpm \
     php83-mysqli \
     php83-phar \
+	php83-ctype \
     php83-curl \
     php83-gd \
     php83-mbstring \
