@@ -3,6 +3,8 @@
 secrets:
   mysql:
     file: ../secrets/mysql.txt
+  portainer:
+    file: ../secrets/portainer.txt
   wp_db:
     file: ../secrets/wp_db.txt
   wp_admin:
@@ -72,6 +74,22 @@ services:
       - "3306"
     secrets:
       - mysql
+# -- portainer ------------------- B --
+  inception_portainer:
+    build:
+      context: ./requirements/bonus/portainer
+    image: inception_portainer
+    container_name: inception_portainer
+    restart: always
+    volumes:
+      - portainer-disk:/data
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - inception_network
+    ports:
+      - "9000:9000"
+    secrets:
+      - portainer
 
 # persistent volumes
 # ------------------------------------------------------------------------------
@@ -89,6 +107,13 @@ volumes:
       type: none
       #device: /home/mweghofe/data/wordpress
       device: ../data/wordpress
+      o: bind
+  portainer-disk:
+    driver: local
+    driver_opts:
+      type: none
+      # device: /home/mweghofe/data/portainer
+      device: ../data/portainer
       o: bind
 
 # networks
