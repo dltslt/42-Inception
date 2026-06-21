@@ -33,7 +33,6 @@ services:
     volumes:
       - wordpress-disk:/var/www/html
     ports:
-      - "80:80"
       - "443:443"
     networks:
       - inception_network
@@ -125,6 +124,19 @@ services:
       - "9000:9000"
     secrets:
       - portainer
+# -- website --------------------- B --
+  inception_website:
+    build:
+      context: ./requirements/bonus/website
+      args:
+        - A_DOMAIN_NAME=$DOMAIN_NAME
+    image: inception_website
+    container_name: inception_website
+    restart: always
+    networks:
+      - inception_network
+    expose:
+      - "8443"
 
 # persistent volumes
 # ------------------------------------------------------------------------------
