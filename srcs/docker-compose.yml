@@ -1,6 +1,8 @@
 # pssssssst don't tell anyone
 # ------------------------------------------------------------------------------
 secrets:
+  ftp:
+    file: ../secrets/ftp.txt
   mysql:
     file: ../secrets/mysql.txt
   wp_db:
@@ -72,6 +74,25 @@ services:
       - "3306"
     secrets:
       - mysql
+# -- ftp ------------------------- B --
+  inception_ftp:
+    env_file: .env
+    build:
+      context: ./requirements/bonus/ftp
+    image: inception_ftp
+    container_name: inception_ftp
+    restart: always
+    depends_on:
+      - inception_wordpress
+    volumes:
+      - wordpress-disk:/var/www/html
+    networks:
+      - inception_network
+    ports:
+      - "21:21"
+      - "21000-21010:21000-21010"
+    secrets:
+      - ftp
 
 # persistent volumes
 # ------------------------------------------------------------------------------
