@@ -1,12 +1,16 @@
 FROM alpine:3.23
 
+EXPOSE 80 8443
+
+ARG A_DOMAIN_NAME
+
 RUN apk update && apk add --no-cache caddy nss-tools
 
-COPY conf/Caddyfile /etc/caddy/Caddyfile
+COPY conf/Caddyfile.conf /etc/caddy/Caddyfile
 
 COPY tools/ /srv/www
 
-EXPOSE 8080 443
+RUN sed -i "s|__DOMAIN_NAME__|${A_DOMAIN_NAME}|g" /etc/caddy/Caddyfile
 
 ENTRYPOINT ["caddy"]
 

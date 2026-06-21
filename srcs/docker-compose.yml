@@ -76,14 +76,16 @@ services:
   inception_website:
     build:
       context: ./requirements/bonus/website
+      args:
+        - A_DOMAIN_NAME=$DOMAIN_NAME
     image: inception_website
     container_name: inception_website
     restart: always
     networks:
       - inception_network
-    ports: # FIXME this is a problem
-      - "80:80"
-      - "443:443"
+    expose:
+      - "80"
+      - "8443"
 
 # persistent volumes
 # ------------------------------------------------------------------------------
