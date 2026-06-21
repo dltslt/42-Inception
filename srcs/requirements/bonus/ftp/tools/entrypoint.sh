@@ -12,9 +12,12 @@ if ! id "${FTP_USER}" > /dev/null 2>&1; then
 	#   -s: login shell
 	#   -D: no password set, skips the prompt
 	#   -u: explicit UID >= 2000 (required by --minuid)
-	adduser -h /var/www/html -s /sbin/nologin -D -u 2000 "${FTP_USER}"
+	# adduser -h /var/www/html -s /sbin/nologin -D -u 2000 "${FTP_USER}"
+	printf '%s\n%s\n' "$FTP_PASSWORD" "$FTP_PASSWORD" | \
+		pure-pw useradd ${FTP_USER} -u www-data -d "${WP_PATH}"
+	pure-pw mkdb
 	# set the password
-	echo "${FTP_USER}:${FTP_PASSWORD}" | chpasswd
+	# echo "${FTP_USER}:${FTP_PASSWORD}" | chpasswd
 
 	echo "User created."
 fi
@@ -36,11 +39,11 @@ echo "Starting Pure-FTPd..."
 #| `--logfile`          | `-O`               | logging option, but syntax varies by build |
 
 exec pure-ftpd \
-    -S 0.0.0.0,21 \
-    -p 21000:21010 \
-    -P "${FTP_PASSIVE_IP}" \
-    -E \
-    -j \
-    -I 2000 \
-    -U 133:022 \
-    -R
+	-l puredb:/etc/pureftpd.pdb \
+	-S 0.0.0.0,21 \
+	-p 21000:21010 \
+	-P "${FTP_PASSIVE_IP}" \
+	-E \
+	-I 82 \
+	-U 133:022 \
+	-R
