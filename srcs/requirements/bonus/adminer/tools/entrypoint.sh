@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # start simplistic php server in background
-php83 -S 0.0.0.0:8081 -t /var/www/adminer/ &
+php83 -S 0.0.0.0:8080 -t /var/www/adminer/ &
 PID=$!
 # capture SIGTERM
 trap "kill -SIGTERM $PID" SIGTERM

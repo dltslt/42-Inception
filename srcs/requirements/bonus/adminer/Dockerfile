@@ -1,6 +1,6 @@
 FROM alpine:3.23
 
-EXPOSE 8081
+EXPOSE 8080
 
 RUN apk update && apk add --no-cache \
 	php83 \

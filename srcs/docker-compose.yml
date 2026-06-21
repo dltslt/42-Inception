@@ -106,8 +106,8 @@ services:
       - inception_mariadb
     networks:
       - inception_network
-    ports:
-      - "8081:8081"
+    expose:
+      - "8080"
 # -- portainer ------------------- B --
   inception_portainer:
     build:
@@ -120,8 +120,8 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
     networks:
       - inception_network
-    ports:
-      - "9000:9000"
+    expose:
+      - "9000"
     secrets:
       - portainer
 # -- website --------------------- B --
@@ -133,6 +133,10 @@ services:
     image: inception_website
     container_name: inception_website
     restart: always
+    depends_on:
+      - inception_portainer
+      - inception_adminer
+      - inception_nginx
     networks:
       - inception_network
     expose:
