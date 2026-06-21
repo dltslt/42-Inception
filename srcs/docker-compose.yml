@@ -72,6 +72,20 @@ services:
       - "3306"
     secrets:
       - mysql
+# -- adminer --------------------- B --
+  inception_adminer:
+    env_file: .env
+    build:
+      context: ./requirements/bonus/adminer
+    image: inception_adminer
+    container_name: inception_adminer
+    restart: always
+    depends_on:
+      - inception_mariadb
+    networks:
+      - inception_network
+    ports:
+      - "8081:8081"
 
 # persistent volumes
 # ------------------------------------------------------------------------------
