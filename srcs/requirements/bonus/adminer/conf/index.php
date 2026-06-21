@@ -1,0 +1,1 @@
+<?php header("Location: /adminer.php?server=inception_mariadb&username=boss");

@@ -11,7 +11,9 @@ RUN apk update && apk add --no-cache \
 	wget
 
 RUN mkdir -p /var/www/adminer && \
-	wget -q -O /var/www/adminer/index.php https://www.adminer.org/latest.php
+	wget -q -O /var/www/adminer/adminer.php https://www.adminer.org/latest.php
+
+COPY ./conf/index.php /var/www/adminer/index.php
 
 COPY ./tools/entrypoint.sh /run/entrypoint.sh
 
