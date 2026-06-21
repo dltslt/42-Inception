@@ -55,8 +55,18 @@ GRANT SELECT, INSERT, UPDATE, DELETE, CREATE, DROP, ALTER, INDEX, REFERENCES
         --role=author \
         --user_pass="${WP_USER_PASSWORD}"
 
-	#chown www-data:www-data /var/www/html/wp-config.php
-    echo "WordPress installation complete."
+	# Create another Post
+	wp post create --path="${WP_PATH}" --post_title="Docker Stack" \
+		--post_content="Go <a href="https://static.${DOMAIN_NAME}">here</a> to the main attraction." --post_status=publish
+
+	# Setup redis cache
+	wp config set WP_REDIS_HOST inception_redis --path="${WP_PATH}"
+	wp config set WP_REDIS_PORT 6379 --path="${WP_PATH}"
+	wp plugin install redis-cache --activate --path="${WP_PATH}"
+	wp redis enable --path="${WP_PATH}"
+	echo "WordPress redis cache installed."
+	
+    echo "WordPress installation and setup complete."
 else
     echo "WordPress already installed, skipping setup."
 fi

@@ -1,8 +1,12 @@
 # pssssssst don't tell anyone
 # ------------------------------------------------------------------------------
 secrets:
+  ftp:
+    file: ../secrets/ftp.txt
   mysql:
     file: ../secrets/mysql.txt
+  portainer:
+    file: ../secrets/portainer.txt
   wp_db:
     file: ../secrets/wp_db.txt
   wp_admin:
@@ -29,7 +33,6 @@ services:
     volumes:
       - wordpress-disk:/var/www/html
     ports:
-      - "80:80"
       - "443:443"
     networks:
       - inception_network
@@ -45,6 +48,7 @@ services:
     restart: always
     depends_on:
       - inception_mariadb
+      - inception_redis
     volumes:
       - wordpress-disk:/var/www/html
     networks:
@@ -72,6 +76,85 @@ services:
       - "3306"
     secrets:
       - mysql
+# -- ftp ------------------------- B --
+  inception_ftp:
+    env_file: .env
+    build:
+      context: ./requirements/bonus/ftp
+    image: inception_ftp
+    container_name: inception_ftp
+    restart: always
+    depends_on:
+      - inception_wordpress
+    volumes:
+      - wordpress-disk:/var/www/html
+    networks:
+      - inception_network
+    ports:
+      - "21:21"
+      - "21000-21010:21000-21010"
+    secrets:
+      - ftp
+# -- adminer --------------------- B --
+  inception_adminer:
+    env_file: .env
+    build:
+      context: ./requirements/bonus/adminer
+    image: inception_adminer
+    container_name: inception_adminer
+    restart: always
+    depends_on:
+      - inception_mariadb
+      - inception_website
+    networks:
+      - inception_network
+    expose:
+      - "8080"
+# -- portainer ------------------- B --
+  inception_portainer:
+    build:
+      context: ./requirements/bonus/portainer
+    image: inception_portainer
+    container_name: inception_portainer
+    restart: always
+    depends_on:
+      - inception_website
+    volumes:
+      - portainer-disk:/data
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - inception_network
+    expose:
+      - "9000"
+    secrets:
+      - portainer
+# -- website --------------------- B --
+  inception_website:
+    build:
+      context: ./requirements/bonus/website
+      args:
+        - A_DOMAIN_NAME=$DOMAIN_NAME
+    image: inception_website
+    container_name: inception_website
+    restart: always
+    depends_on:
+      # - inception_portainer
+      # - inception_adminer
+      - inception_nginx
+    networks:
+      - inception_network
+    expose:
+      - "8443"
+# -- redis ----------------------- B --
+  inception_redis:
+    build:
+      context: ./requirements/bonus/redis
+    image: inception_redis
+    container_name: inception_redis
+    restart: always
+    networks:
+      - inception_network
+    
 
 # persistent volumes
 # ------------------------------------------------------------------------------
@@ -89,6 +172,13 @@ volumes:
       type: none
       #device: /home/mweghofe/data/wordpress
       device: ../data/wordpress
+      o: bind
+  portainer-disk:
+    driver: local
+    driver_opts:
+      type: none
+      # device: /home/mweghofe/data/portainer
+      device: ../data/portainer
       o: bind
 
 # networks
