@@ -1,10 +1,62 @@
-body {
-	font-family: sans-serif;
-	max-width: 800px;
-	margin: 0 auto;
-	padding: 2rem;
-	background: #f5f5f5;
-	color: #222;
+:root{
+	--bg:#0f1724;
+	--card:#0b1220;
+	--muted:#9aa4b2;
+	--accent:#5eead4;
+	--glass: rgba(255,255,255,0.03);
 }
-header { border-bottom: 2px solid #222; margin-bottom: 2rem; }
-h1 { margin-bottom: 0.25rem; }
+
+*{box-sizing:border-box}
+body{
+	font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+	max-width:1100px;
+	margin:0 auto;
+	padding:2.25rem;
+	background:linear-gradient(180deg,var(--bg),#071022);
+	color:#e6eef6;
+	-webkit-font-smoothing:antialiased;
+}
+
+header{border-bottom:1px solid rgba(255,255,255,0.04); padding-bottom:1rem; margin-bottom:1.4rem}
+.eyebrow{color:var(--muted); font-size:.9rem; margin:0 0 .25rem 0}
+h1{margin:0 0 .25rem 0; font-weight:700}
+.subtitle{margin:0; color:var(--muted)}
+
+main{display:block}
+
+.services{
+	display:grid;
+	grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+	gap:1rem;
+	margin-top:1rem;
+}
+
+.service{
+	background:linear-gradient(180deg,var(--card),rgba(11,18,32,0.8));
+	border:1px solid rgba(255,255,255,0.04);
+	padding:1rem;
+	border-radius:10px;
+	box-shadow:0 6px 18px rgba(2,6,23,0.6);
+	transition:transform .12s ease, box-shadow .12s ease;
+}
+.service:hover{transform:translateY(-6px); box-shadow:0 14px 30px rgba(2,6,23,0.7)}
+.service .service-head{display:flex; align-items:center; gap:0.75rem; margin-bottom:.45rem}
+.service .icon{color:var(--accent); display:inline-flex; align-items:center; justify-content:center; width:36px; height:36px; border-radius:8px; background:linear-gradient(180deg, rgba(94,234,212,0.08), rgba(94,234,212,0.02));}
+.service h3{margin:0; font-size:1.05rem; flex:1}
+.service .desc{margin:0; color:var(--muted); font-size:.95rem}
+.meta{margin-top:.6rem; color:rgba(255,255,255,0.14); font-size:.88rem}
+.meta .meta-val{color:var(--muted)}
+
+.flow{margin-top:1.25rem; padding-left:1.05rem; color:var(--muted)}
+.flow li{margin:0.5rem 0}
+
+@media (max-width:520px){
+	body{padding:1rem}
+	.services{grid-template-columns:1fr}
+}
+
+/* Accessibility helpers */
+h2{margin:0 0 .5rem 0}
+
+/* small print */
+footer{color:var(--muted); font-size:.85rem; margin-top:1.25rem}
