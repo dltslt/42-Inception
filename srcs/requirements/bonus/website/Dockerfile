@@ -10,7 +10,8 @@ COPY conf/Caddyfile.conf /etc/caddy/Caddyfile
 
 COPY tools/ /srv/www
 
-RUN sed -i "s|__DOMAIN_NAME__|${A_DOMAIN_NAME}|g" /etc/caddy/Caddyfile
+RUN sed -i "s|__DOMAIN_NAME__|${A_DOMAIN_NAME}|g" /etc/caddy/Caddyfile && \
+	sed -i "s|__DOMAIN_NAME__|${A_DOMAIN_NAME}|g" /srv/www/index.html
 
 ENTRYPOINT ["caddy"]
 

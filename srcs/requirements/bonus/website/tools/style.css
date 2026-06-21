@@ -31,6 +31,17 @@ main{display:block}
 	margin-top:1rem;
 }
 
+a.service-link,
+a.service-link:link,
+a.service-link:visited{
+	text-decoration:none;
+	color:inherit;
+	display:block;
+}
+.service-link:hover .service{
+	transform:translateY(-6px);
+	box-shadow:0 14px 30px rgba(2,6,23,0.7);
+}
 .service{
 	background:linear-gradient(180deg,var(--card),rgba(11,18,32,0.8));
 	border:1px solid rgba(255,255,255,0.04);
@@ -39,7 +50,6 @@ main{display:block}
 	box-shadow:0 6px 18px rgba(2,6,23,0.6);
 	transition:transform .12s ease, box-shadow .12s ease;
 }
-.service:hover{transform:translateY(-6px); box-shadow:0 14px 30px rgba(2,6,23,0.7)}
 .service .service-head{display:flex; align-items:center; gap:0.75rem; margin-bottom:.45rem}
 .service .icon{color:var(--accent); display:inline-flex; align-items:center; justify-content:center; width:36px; height:36px; border-radius:8px; background:linear-gradient(180deg, rgba(94,234,212,0.08), rgba(94,234,212,0.02));}
 .service h3{margin:0; font-size:1.05rem; flex:1}

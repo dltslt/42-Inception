@@ -55,7 +55,9 @@ GRANT SELECT, INSERT, UPDATE, DELETE, CREATE, DROP, ALTER, INDEX, REFERENCES
         --role=author \
         --user_pass="${WP_USER_PASSWORD}"
 
-	#chown www-data:www-data /var/www/html/wp-config.php
+	# Create another Post
+	wp post create --path="${WP_PATH}" --post_title="Docker Stack" \
+		--post_content="Go <a href="https://static.${DOMAIN_NAME}">here</a> to the main attraction." --post_status=publish
     echo "WordPress installation complete."
 else
     echo "WordPress already installed, skipping setup."
