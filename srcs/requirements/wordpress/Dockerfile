@@ -21,6 +21,8 @@ RUN apk update && apk add --no-cache \
     php83-zip \
     php83-opcache \
     php83-session \
+	php83-pecl-redis \
+	php83-redis \
     php83-iconv \
     php83-tokenizer \
     php83-simplexml \

@@ -48,6 +48,7 @@ services:
     restart: always
     depends_on:
       - inception_mariadb
+      - inception_redis
     volumes:
       - wordpress-disk:/var/www/html
     networks:
@@ -104,6 +105,7 @@ services:
     restart: always
     depends_on:
       - inception_mariadb
+      - inception_website
     networks:
       - inception_network
     expose:
@@ -115,6 +117,8 @@ services:
     image: inception_portainer
     container_name: inception_portainer
     restart: always
+    depends_on:
+      - inception_website
     volumes:
       - portainer-disk:/data
       - /var/run/docker.sock:/var/run/docker.sock
@@ -134,13 +138,23 @@ services:
     container_name: inception_website
     restart: always
     depends_on:
-      - inception_portainer
-      - inception_adminer
+      # - inception_portainer
+      # - inception_adminer
       - inception_nginx
     networks:
       - inception_network
     expose:
       - "8443"
+# -- redis ----------------------- B --
+  inception_redis:
+    build:
+      context: ./requirements/bonus/redis
+    image: inception_redis
+    container_name: inception_redis
+    restart: always
+    networks:
+      - inception_network
+    
 
 # persistent volumes
 # ------------------------------------------------------------------------------
