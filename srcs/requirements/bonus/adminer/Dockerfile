@@ -10,10 +10,11 @@ RUN apk update && apk add --no-cache \
 	php83-pdo_mysql \
 	wget
 
-RUN mkdir -p /var/www/adminer
+RUN mkdir -p /var/www/adminer && \
+	wget -q -O /var/www/adminer/index.php https://www.adminer.org/latest.php
 
-RUN wget -q -O /var/www/adminer/index.php https://www.adminer.org/latest.php
+COPY ./tools/entrypoint.sh /run/entrypoint.sh
 
-ENTRYPOINT [ "php83" ]
+RUN chmod +x /run/entrypoint.sh
 
-CMD ["-S", "0.0.0.0:8081", "-t", "/var/www/adminer/"]
+ENTRYPOINT [ "/run/entrypoint.sh" ]
