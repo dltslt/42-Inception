@@ -66,6 +66,91 @@ make re       # equivalent to: remove everything, then `make`
 | Portainer | `https://manage.mweghofe.42.fr` | Username `admin`; password in `secrets/portainer.txt` (this is the password you put in that file on first setup) |
 | FTP | `ftp://mweghofe.42.fr` (port 21, passive range 21000-21010) | Username from `FTP_USER` in `srcs/.env` (defaults to `ftpu`), password in `secrets/ftp.txt`. Root directory is the same volume WordPress serves. |
 
+## Using the FTP Service
+
+Pure-FTPd gives direct file access to the same volume WordPress serves (`wordpress-disk`, mounted at `/var/www/html`) — anything uploaded, edited, or deleted here shows up immediately on the live site, and vice versa. It's plain FTP, not FTPS/SFTP, so any standard FTP client works.
+
+- **Host**: `mweghofe.42.fr` (or the VM's IP)
+- **Port**: `21`, with passive-mode data ports `21000-21010` — make sure both are reachable through any firewall/NAT between you and the VM
+- **Username**: `FTP_USER` in `srcs/.env` (default `ftpu`)
+- **Password**: `secrets/ftp.txt`
+- **Home directory**: `/var/www/html` — the WordPress document root, so you land straight in `wp-content/`, `wp-config.php`, etc.
+
+### Command-line client
+
+```bash
+ftp mweghofe.42.fr
+Name: ftpu
+Password: <contents of secrets/ftp.txt>
+ftp> ls wp-content/themes
+ftp> cd wp-content/uploads
+ftp> put myfile.jpg
+ftp> get some-existing-file.php
+ftp> bye
+```
+
+`lftp` is a more modern alternative and handles passive mode automatically:
+
+```bash
+lftp -u ftpu, ftp://mweghofe.42.fr
+```
+
+### GUI clients (e.g. FileZilla)
+
+| Field | Value |
+|---|---|
+| Protocol | FTP — plain FTP |
+| Host | `mweghofe.42.fr` |
+| Port | `21` |
+| Logon type | Normal |
+| User | `FTP_USER` (default `ftpu`) |
+| Password | `secrets/ftp.txt` |
+| Transfer mode | Passive |
+
+> Files are owned by `www-data` (uid 82) inside the container so WordPress/PHP-FPM can read and write them. Uploads made over FTP inherit that ownership automatically, since the FTP user is mapped to the same uid — no manual `chown` needed.
+
+## Accessing MariaDB Directly (Shell)
+
+For a database GUI, use Adminer (`https://data.mweghofe.42.fr`, see above). To work from the command line instead — e.g. to run raw SQL, script something, or debug — open a shell in the `mariadb` container and use the `mariadb` client directly.
+
+```bash
+make sh mariadb
+```
+
+This drops you into a shell inside `inception_mariadb`. From there:
+
+```bash
+# as the maintenance user (created on MariaDB's first boot)
+mariadb -u boss -p
+# password: contents of secrets/mysql.txt (on the host) — or run:
+cat /run/secrets/mysql
+```
+
+```bash
+# as root, via unix_socket auth (no password needed — root can only
+# connect this way, and only from inside the container, per the
+# secure-installation step in the entrypoint)
+mariadb -u root
+```
+
+Once connected, the WordPress database (`WP_DB` in `.env`, default `wordpress`) is available like any other MariaDB database:
+
+```sql
+SHOW DATABASES;
+USE wordpress;
+SHOW TABLES;
+SELECT user_login, user_email FROM wp_users;
+```
+
+You can also skip the interactive shell and run a one-off query directly from the host:
+
+```bash
+docker compose -f srcs/docker-compose.yml exec inception_mariadb \
+  mariadb -u boss -p"$(cat secrets/mysql.txt)" -e "SHOW TABLES;" wordpress
+```
+
+> MariaDB has no port published to the host (`expose: 3306`, not `ports:`) — it's reachable only from other containers on `inception_network`, so this container-shell route (or Adminer, which lives on that same network) is the only way in. There's no `mariadb`/`mysql` client on the host itself required.
+
 ## Creating and Managing Credentials
 
 No password ever lives in a Dockerfile, `docker-compose.yml`, or `.env` — every credential is a [Docker secret](https://docs.docker.com/engine/swarm/secrets/): a plain-text file under `secrets/`, mounted read-only inside the one container that needs it, at `/run/secrets/<name>`.
