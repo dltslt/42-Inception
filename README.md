@@ -120,12 +120,49 @@ Only port **443** is ever exposed to the outside for HTTP(S) traffic (plus 21/21
 
 ### Technology comparisons
 
-| Aspect | Option A | Option B | Why this project uses A |
-|---|---|---|---|
-| **Virtualization** | Virtual Machine | Docker | A VM emulates a full guest OS through a hypervisor; a container shares the host kernel and only isolates the userland (namespaces/cgroups). That makes containers start in seconds and cost megabytes instead of gigabytes — the right trade-off for running many small, single-purpose services on one host. The whole stack still runs *inside* one VM, since that isolation boundary is required by the subject. |
-| **Secrets vs Environment Variables** | Docker Secrets | `.env` variables | Secrets are mounted as files under `/run/secrets/*` inside the container only, never appear in `docker inspect`, `docker-compose.yml`, or shell history. Env vars are visible via `docker inspect`/`ps` and are easy to leak into logs. This project puts every password behind a secret and reserves `.env` for non-sensitive configuration (domain, usernames, paths). |
-| **Docker Network vs Host Network** | Bridge network (`inception_network`) | Host network | `network: host`/`--link` are forbidden by the subject anyway. A dedicated bridge network isolates the stack from the host and from other Docker projects, and gives every container a resolvable DNS name (`inception_mariadb`, `inception_wordpress`, ...) so only the services that need it expose a port at all — everything else stays internal via `expose`. |
-| **Docker Volumes vs Bind Mounts** | Named volumes (local driver, bind backend) | Plain bind mounts | The subject requires *named* volumes but also mandates the data live at a specific host path — two requirements that are mutually exclusive with a "pure" named volume (Docker picks the path) or a plain bind mount (no `docker volume ls` entry). The resolution is a named volume using the `local` driver with `type: none, o: bind`: Docker tracks it like any other volume, but the backing storage is pinned to `./data/<service>` on the host. |
+#### Virtual Machines vs Docker
+
+| Aspect | Virtual Machine | Docker |
+|---|---|---|
+| Isolation | Full guest OS via a hypervisor | Shared host kernel, isolated userland (namespaces/cgroups) |
+| Startup time | Minutes (full boot) | Seconds (process launch) |
+| Image size | Gigabytes | Megabytes |
+| Overhead | Hypervisor + guest OS | Minimal |
+| Best suited for | Running different/untrusted OSes | Packaging & isolating many small, cooperating services |
+
+The whole stack still runs *inside* one VM, since that boundary is required by the subject — but each individual service is a container, not its own VM. Container-level isolation is all that's needed between cooperating services on one host, without paying for a full guest OS per service.
+
+#### Secrets vs Environment Variables
+
+| Aspect | Docker Secrets | Environment Variables (`.env`) |
+|---|---|---|
+| Storage | Mounted as files under `/run/secrets/*`, inside the container only | Key-value pairs baked into the container's environment |
+| Visibility | Hidden from `docker inspect`, `ps`, and `docker-compose.yml` | Visible via `docker inspect`/`ps`, easy to leak into logs |
+| Best suited for | Passwords, API keys, anything confidential | Non-sensitive configuration |
+
+Every credential in this project — MariaDB, WordPress, FTP, Portainer — is a Docker secret; `.env` holds only non-sensitive configuration (domain name, usernames, ports, paths).
+
+#### Docker Network vs Host Network
+
+| Aspect | Docker Network (bridge) | Host Network |
+|---|---|---|
+| Isolation | Each container gets its own network namespace | Container shares the host's network stack directly |
+| Port exposure | Explicit, via `ports:`/`expose:` | Every port is exposed automatically |
+| Service discovery | Built-in DNS by container name | Manual, via `localhost` + distinct ports |
+| Allowed by the subject | Yes | No — `network: host`/`--link` are forbidden |
+
+The stack runs on a dedicated bridge network (`inception_network`). Only NGINX (443) and FTP (21, 21000-21010) publish ports to the host; every other service stays internal and is reached by the other containers via Docker's built-in DNS.
+
+#### Docker Volumes vs Bind Mounts
+
+| Aspect | Named Volumes | Bind Mounts |
+|---|---|---|
+| Tracked by Docker | Yes (`docker volume ls`) | No |
+| Host path | Chosen by Docker, unless pinned via `driver_opts` | Specified explicitly, must already exist |
+| Portability | Consistent across hosts | Tied to that host's filesystem layout |
+| Allowed by the subject | Yes (required) | No — explicitly forbidden |
+
+This project needs a volume that Docker tracks as a named volume, but whose data still lands at a specific, known host path — so it uses the `local` driver with `type: none, o: bind`: a named volume in every way Docker (and the subject) cares about, backed by a bind mount under `./data/`. See [DEV_DOC.md § Named volumes](DEV_DOC.md#named-volumes-bind-mount-backend) for the exact configuration.
 
 ## Instructions
 
