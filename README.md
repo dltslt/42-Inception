@@ -174,9 +174,17 @@ This project needs a volume that Docker tracks as a named volume, but whose data
 
 ### Setup & run
 
+1. Clone the repository.
+
 ```bash
-git clone <repository_url> && cd Inception
-# create the six required secret files — see USER_DOC.md#creating-the-secrets
+git clone <repository_url> Inception && cd Inception
+```
+
+2. Create the six required secret files — see [user documentation](USER_DOC.md#creating-the-secrets)
+
+3. Build & Start the Inception Stack
+
+```bash
 make
 ```
 
@@ -184,7 +192,7 @@ Then open `https://mweghofe.42.fr` in a browser (self-signed certificate, expect
 
 | Command | Effect |
 |---|---|
-| `make` | Build every image and start the whole stack (detached) |
+| `make` or `make up` | Build every image and start the whole stack (detached) |
 | `make down` | Stop containers, keep volumes and images |
 | `make clean` / `make fclean` | Full teardown — see [DEV_DOC.md § Managing Containers and Volumes](DEV_DOC.md#managing-containers-and-volumes) |
 
