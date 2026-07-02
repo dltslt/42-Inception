@@ -95,20 +95,20 @@
                         </div>
                         <h3>FTP Server</h3>
                     </div>
-                    <p class="desc">File transfer service for uploads and maintenance.</p>
-                    <div class="meta">port: <span class="meta-val">21</span></div>
+                    <p class="desc">File transfer service for the WordPress volume.</p>
+                    <div class="meta">port: <span class="meta-val">21</span> (passive: 21000-21010)</div>
                 </article>
 
                 <a href="https://manage.__DOMAIN_NAME__" class="service-link">
-                    <article class="service" data-service="monitoring">
+                    <article class="service" data-service="portainer">
                         <div class="service-head">
                             <div class="icon" aria-hidden>
-                                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3h18v18H3z"/><path d="M7 13l3-3 4 4 3-6"/></svg>
+                                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 4v5c0 5-3.5 8.5-8 9-4.5-.5-8-4-8-9V7z"/><path d="M9 12l2 2 4-4"/></svg>
                             </div>
-                            <h3>Monitoring</h3>
+                            <h3>Portainer</h3>
                         </div>
-                        <p class="desc">Observability/metrics endpoint for health checks.</p>
-                        <div class="meta">port: <span class="meta-val">9090</span></div>
+                        <p class="desc">Docker container &amp; stack management UI.</p>
+                        <div class="meta">port: <span class="meta-val">9000</span></div>
                     </article>
                 </a>
             </div>
@@ -117,10 +117,10 @@
         <section aria-labelledby="layout-title">
             <h2 id="layout-title">Architecture</h2>
             <ul class="flow">
-                <li><strong>Edge:</strong> Nginx handles public traffic and TLS.</li>
+                <li><strong>Edge:</strong> Nginx handles public traffic and TLS, routing by SNI.</li>
                 <li><strong>App:</strong> WordPress (PHP-FPM) serves content.</li>
                 <li><strong>Storage:</strong> MariaDB for persistence; Redis for cache.</li>
-                <li><strong>Ops:</strong> Adminer, FTP, Caddy, and Monitoring for operations.</li>
+                <li><strong>Ops:</strong> Caddy (2nd-layer proxy + this static site), Adminer, FTP, and Portainer for operations.</li>
             </ul>
         </section>
     </main>
