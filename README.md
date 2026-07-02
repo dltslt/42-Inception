@@ -108,14 +108,14 @@ flowchart TB
     class WordpressDisk,DatabaseDisk,PortainerDisk,DockerSocket resource
 ```
 
-Only port **443** is ever exposed to the outside for HTTP(S) traffic (plus 21/21000-21010 for the FTP bonus). NGINX's `stream` module reads the TLS *ClientHello* SNI field without terminating TLS, and routes purely on hostname: the bare domain goes to NGINX's HTTP server (WordPress), any subdomain goes to Caddy, and anything else is dropped by a black-hole `server` block. Caddy then terminates TLS a second time and reverse-proxies each subdomain to its bonus service. For the full breakdown of every service and container, see [DEV_DOC.md § Service Architecture](DEV_DOC.md#service-architecture).
+Only port **443** is ever exposed to the outside for HTTP(S) traffic (plus 21/21000-21010 for the FTP bonus). NGINX's `stream` module reads the TLS *ClientHello* SNI field without terminating TLS, and routes purely on hostname: the bare domain goes to NGINX's HTTP server (WordPress), any subdomain goes to Caddy, and anything else is dropped by a black-hole `server` block. Caddy then terminates TLS a second time and reverse-proxies each subdomain to its bonus service. For the full breakdown of every service and container, see [developer documentation](DEV_DOC.md#service-architecture).
 
 ### Main design choices
 
 - **Alpine 3.23** (penultimate stable) as the base image for every container — small footprint, `apk` covers every package needed.
-- **Two-layer reverse proxy**: NGINX `stream` for SNI-only routing, then NGINX *or* Caddy for TLS termination depending on the domain. This was chosen over cramming every bonus service into NGINX server blocks, to keep the mandatory and bonus configs fully independent.
-- **Docker secrets** for every credential; **`.env`** for everything else (domain, usernames, ports) — see the comparison table below.
-- **WP-CLI**, run from the entrypoint, for a fully headless WordPress install (no setup wizard).
+- **Two-layer reverse proxy**: NGINX `stream` for SNI-only routing, then NGINX *or* Caddy for TLS termination depending on the domain. This was chosen to showcase a modern webserver while still following mandatory requirements.
+- **Docker secrets** for passwords; **`.env`** for everything else (domain, usernames, ports) — see the comparison table below.
+- **WP-CLI**, run from the entrypoint, for a fully headless WordPress install (no setup wizard, no direct file manipulation).
 - **Idempotent entrypoints**: each service checks for a sentinel (`.init_completed`, `wp-config.php`, an existing OS user, ...) so containers can be freely restarted or rebuilt without repeating first-run setup.
 
 ### Technology comparisons
@@ -195,6 +195,18 @@ Then open `https://mweghofe.42.fr` in a browser (self-signed certificate, expect
 | `make` or `make up` | Build every image and start the whole stack (detached) |
 | `make down` | Stop containers, keep volumes and images |
 | `make clean` / `make fclean` | Full teardown — see [DEV_DOC.md § Managing Containers and Volumes](DEV_DOC.md#managing-containers-and-volumes) |
+
+### Credentials
+
+Every domain/service is protected by a username set in `srcs/.env` and a password stored as a Docker secret under `secrets/`. Usernames are safe to look up directly; passwords never live in the repo, only in the local `secrets/*.txt` files created before the first `make` — see [USER_DOC.md § Creating and Managing Credentials](USER_DOC.md#creating-and-managing-credentials) for how to create and later change them.
+
+| Domain | Service | Username(s) | Password file |
+|---|---|---|---|
+| `mweghofe.42.fr` (`/wp-admin`) | WordPress | Administrator: `supervisor` <br> Author: `minion` | `secrets/wp_admin.txt` · `secrets/wp_user.txt` |
+| `mweghofe.42.fr` (port 21) | FTP | `ftpu` | `secrets/ftp.txt` |
+| `data.mweghofe.42.fr` | Adminer (MariaDB) | `boss` | `secrets/mysql.txt` |
+| `manage.mweghofe.42.fr` | Portainer | `admin` (fixed) | `secrets/portainer.txt` |
+| `static.mweghofe.42.fr` | Static website | none, public | — |
 
 ## Resources
 
