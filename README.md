@@ -15,7 +15,7 @@ flowchart TB
 
     Client["🌍 Client"]
 
-    subgraph Ingress
+    subgraph ReverseProxy["Reverse Proxy"]
         Stream["NGINX Stream<br/>:443<br/>SNI Routing"]
         Http["NGINX HTTP<br/>:4443"]
         Caddy["Caddy<br/>:8443"]
@@ -73,7 +73,7 @@ flowchart TB
     %% Nord Theme
 
     %% Subgraphs
-    style Ingress fill:#EAF3F8,stroke:#81A1C1,stroke-width:2px,color:#2E3440
+    style ReverseProxy fill:#EAF3F8,stroke:#81A1C1,stroke-width:2px,color:#2E3440
     style Applications fill:#EEF6EC,stroke:#A3BE8C,stroke-width:2px,color:#2E3440
     style Data fill:#FBF0EC,stroke:#D08770,stroke-width:2px,color:#2E3440
     style Resources fill:#F4EEF6,stroke:#B48EAD,stroke-width:2px,color:#2E3440
@@ -90,7 +90,7 @@ flowchart TB
     %% Nodes
     classDef user fill:#ECEFF4,stroke:#4C566A,color:#2E3440
 
-    classDef ingress fill:#81A1C1,stroke:#5E81AC,color:#E5E9F0
+    classDef reverseProxy fill:#81A1C1,stroke:#5E81AC,color:#E5E9F0
     classDef app fill:#A3BE8C,stroke:#8FBCBB,color:#2E3440
     classDef data fill:#D08770,stroke:#BF616A,color:#E5E9F0
     classDef resource fill:#B48EAD,stroke:#5E81AC,color:#E5E9F0
@@ -99,7 +99,7 @@ flowchart TB
 
     class Client user
 
-    class Stream,Http,Caddy ingress
+    class Stream,Http,Caddy reverseProxy
 
     class WordPress,Adminer,StaticSite,Portainer,FTP app
 
