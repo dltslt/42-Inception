@@ -3,7 +3,7 @@ set -e
 
 FTP_PASSWORD=$(cat /run/secrets/ftp)
 
-if ! id "${FTP_USER}" > /dev/null 2>&1; then
+if ! pure-pw show "${FTP_USER}" > /dev/null 2>&1; then
 	echo "Creating user: ${FTP_USER}"
 
 	# 1. create FTP user 
