@@ -11,7 +11,7 @@ RUN apk update && apk add --no-cache \
 	wget
 
 RUN mkdir -p /var/www/adminer && \
-	wget -q -O /var/www/adminer/adminer.php https://www.adminer.org/latest.php
+	wget -q -O /var/www/adminer/adminer.php https://github.com/vrana/adminer/releases/download/v5.4.2/adminer-5.4.2.php
 
 COPY ./conf/index.php /var/www/adminer/index.php
 
