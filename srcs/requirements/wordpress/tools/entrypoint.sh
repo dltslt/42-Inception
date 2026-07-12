@@ -57,7 +57,7 @@ GRANT SELECT, INSERT, UPDATE, DELETE, CREATE, DROP, ALTER, INDEX, REFERENCES
 
 	# Create another Post
 	wp post create --path="${WP_PATH}" --post_title="Docker Stack" \
-		--post_content="Go <a href="https://static.${DOMAIN_NAME}">here</a> to the main attraction." --post_status=publish
+		--post_content="Go <a href=\"https://static.${DOMAIN_NAME}\">here</a> to the main attraction." --post_status=publish
 
 	# Setup redis cache
 	wp config set WP_REDIS_HOST inception_redis --path="${WP_PATH}"
