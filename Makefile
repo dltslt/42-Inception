@@ -6,6 +6,7 @@ COMPOSEFILE := srcs/docker-compose.yml
 VOLUME_DATA := /home/mweghofe/data/mariadb \
 				/home/mweghofe/data/wordpress \
 				/home/mweghofe/data/portainer
+42DATA		:= /home/mweghofe/data
 # VOLUME_DATA := ./data/mariadb \
 # 			   ./data/wordpress \
 # 			   ./data/portainer
@@ -88,8 +89,11 @@ logs:
 # removes containers & networks & volumes but NOT images
 clean:
 	@docker compose -f $(COMPOSEFILE) down $(SERVICES) -v
+#	@if [ "$(words $(SERVICES))" -eq 0 ] || [ "$(words $(filter mariadb wordpress,$(SERVICES)))" -eq 2 ]; then \
+ 		docker run --rm -v "$(CURDIR)/data:/data" busybox rm -rf $(VOLUME_DATA); \
+	fi
 	@if [ "$(words $(SERVICES))" -eq 0 ] || [ "$(words $(filter mariadb wordpress,$(SERVICES)))" -eq 2 ]; then \
-		docker run --rm -v "$(CURDIR)/data:/data" busybox rm -rf $(VOLUME_DATA); \
+		docker run --rm -v "$(42DATA):$(42DATA)" busybox rm -rf $(VOLUME_DATA); \
 	fi
 	@docker buildx prune --force --filter "until=48h" || \
 		docker builder prune --force --filter "until=48h"
@@ -97,15 +101,19 @@ clean:
 # removes containers & networks & volumes & images & unused build cache
 fclean:
 	@docker compose -f $(COMPOSEFILE) down --rmi all -v
-	@docker run --rm -v "$(CURDIR)/data:/data" busybox rm -rf $(VOLUME_DATA)
+# 	@docker run --rm -v "$(CURDIR)/data:/data" busybox rm -rf $(VOLUME_DATA)
+	@docker run --rm -v "$(42DATA):$(42DATA)" busybox rm -rf $(VOLUME_DATA)
 # 	@docker rmi busybox
 	@docker buildx prune --force || docker builder prune --force
 
 # remove all data for a specific service & all dangling build cache
 remove:
 	@docker compose -f $(COMPOSEFILE) down $(SERVICES) --rmi all -v
+#	@if [ "$(words $(SERVICES))" -eq 0 ] || [ "$(words $(filter mariadb wordpress,$(SERVICES)))" -eq 2 ]; then \
+ 		docker run --rm -v "$(CURDIR)/data:/data" busybox rm -rf $(VOLUME_DATA); \
+	fi
 	@if [ "$(words $(SERVICES))" -eq 0 ] || [ "$(words $(filter mariadb wordpress,$(SERVICES)))" -eq 2 ]; then \
-		docker run --rm -v "$(CURDIR)/data:/data" busybox rm -rf $(VOLUME_DATA); \
+		docker run --rm -v "$(42DATA):$(42DATA)" busybox rm -rf $(VOLUME_DATA); \
 	fi
 # 	@docker rmi busybox
 	@docker buildx prune --force || docker builder prune --force
