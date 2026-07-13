@@ -163,22 +163,22 @@ volumes:
     driver: local
     driver_opts:
       type: none
-      #device: /home/mweghofe/data/mariadb
-      device: ../data/mariadb
+      device: /home/mweghofe/data/mariadb
+      # device: ../data/mariadb
       o: bind
   wordpress-disk:
     driver: local
     driver_opts:
       type: none
-      #device: /home/mweghofe/data/wordpress
-      device: ../data/wordpress
+      device: /home/mweghofe/data/wordpress
+      # device: ../data/wordpress
       o: bind
   portainer-disk:
     driver: local
     driver_opts:
       type: none
-      # device: /home/mweghofe/data/portainer
-      device: ../data/portainer
+      device: /home/mweghofe/data/portainer
+      # device: ../data/portainer
       o: bind
 
 # networks

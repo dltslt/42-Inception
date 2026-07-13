@@ -3,12 +3,12 @@
 # ------------------------------------------------------------------------------
 
 COMPOSEFILE := srcs/docker-compose.yml
-#VOLUME_DATA := /home/mweghofe/data/mariadb \
-#				/home/mweghofe/data/wordpress \
-#				/home/mweghofe/data/portainer
-VOLUME_DATA := ./data/mariadb \
-			   ./data/wordpress \
-			   ./data/portainer
+VOLUME_DATA := /home/mweghofe/data/mariadb \
+				/home/mweghofe/data/wordpress \
+				/home/mweghofe/data/portainer
+# VOLUME_DATA := ./data/mariadb \
+# 			   ./data/wordpress \
+# 			   ./data/portainer
 
 KNOWN_TARGETS := all run build up down re\
 				 debug stop start sh logs \
